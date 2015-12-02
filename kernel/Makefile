@@ -48,12 +48,14 @@ flash.bin: kernel.img script.img
 	dd if=script.img of=flash.bin conv=notrunc bs=4k seek=575
 
 # 32678*4096 = 128MiB
-card.sd: fs-cmdline userhello
+card.sd: fs-cmdline userhello userTest
 	dd if=/dev/zero of=card.sd conv=notrunc bs=4096 count=32768
 	fs/cmdline/buildfs ../user/hello/ ../user/tests
 
 userhello:
 	make -C ../user/hello
+userTest:
+	make -C ../user/tests
 
 fs-cmdline:
 	make -C fs/cmdline

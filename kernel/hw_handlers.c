@@ -162,7 +162,7 @@ long __attribute__((interrupt("SWI"))) software_interrupt_handler(void)
 		os_printf((const char*) r0);
 		return 0L;
 	case SYSCALL_THREAD_CREATE:
-		// TODO
+		os_printf("Call SYSCALL_THREAD_CREATE in hw_handler\n");
 		return 0L;
 	case SYSCALL_THREAD_EXIT:
 		// TODO
