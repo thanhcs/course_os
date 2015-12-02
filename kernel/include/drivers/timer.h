@@ -32,5 +32,8 @@ int disable_timer(int timer_index);
 int register_handler(int timer_index, void (*handler)(void *args));
 int unregister_handler(int timer_index);
 
+int enable_timer_interrupt(int timer_index);
+int disable_timer_interrupt(int timer_index);
+
 
 #endif

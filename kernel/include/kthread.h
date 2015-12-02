@@ -4,6 +4,7 @@
  *  Created on: Apr 23, 2015
  *      Author: mwkurian
  */
+#include <stdint.h>
 
 #ifndef KERNEL_INCLUDE_KTHREAD_H_
 #define KERNEL_INCLUDE_KTHREAD_H_
