@@ -1,4 +1,4 @@
-/*
+ok /*
  *
  * Harware Handler Interface  
  *
@@ -160,6 +160,21 @@ long __attribute__((interrupt("SWI"))) software_interrupt_handler(void)
 		os_printf("Printf system call called!\n");
 
 		os_printf((const char*) r0);
+		return 0L;
+	case SYSCALL_THREAD_CREATE:
+		// TODO
+		return 0L;
+	case SYSCALL_THREAD_EXIT:
+		// TODO
+		return 0L;
+	case SYSCALL_THREAD_JOIN:
+		// TODO
+		return 0L;
+	case SYSCALL_THREAD_GET_ID:
+		// TODO
+		return 0L;
+	case SYSCALL_THREAD_SELF:
+		// TODO
 		return 0L;
 	default:
 		os_printf("That wasn't a syscall you knob!\n");
