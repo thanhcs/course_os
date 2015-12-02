@@ -1,13 +1,14 @@
 #include "global_defs.h"
-#include "kthread.h"
 #include "scheduler.h"
 #include "vm.h"
 #include "klibc.h"
 #include "process.h"
+#include "drivers/timer.h"
 #include "data_structures/linked_list.h"
 #include "data_structures/hash_map.h"
 #include "data_structures/array_list.h"
 #include "drivers/timer.h"
+#include "kthread.h"
 
 #define MAX_TASKS 100   // in the future, cap will be removed
 #define MAX_ACTIVE_TASKS 4  // in the future, will dynamically change based on load
@@ -60,31 +61,37 @@ static uint32_t sched_tid;
 //
 #define SCHEDULER_TIMER 0
 
+// int currentTimerValue;
+
 void __sched_dispatch(void);
 
 void timer_handler(void *args)
 {
-	os_printf("scheduler received timer interrupt, need to switch tasks...\n");
+    os_printf("scheduler received timer interrupt, need to switch tasks...\n");
+    __sched_dispatch();
+
 }
 
 void __sched_register_timer_irq(void)
 {
-	register_handler(SCHEDULER_TIMER, timer_handler);
+    register_handler(SCHEDULER_TIMER, timer_handler);
 }
 
 void __sched_deregister_timer_irq()
 {
-	unregister_handler(SCHEDULER_TIMER);
+    unregister_handler(SCHEDULER_TIMER);
 }
 
 void __sched_pause_timer_irq()
 {
-	// TODO: suspend the timer here
+    // TODO: suspend the timer here
+    disable_timer_interrupt(SCHEDULER_TIMER);
 }
 
 void __sched_resume_timer_irq()
 {
-	// TODO: resume the timer here
+    // TODO: resume the timer here
+    enable_timer_interrupt(SCHEDULER_TIMER);
 }
 
 // get the current process id
@@ -98,9 +105,9 @@ uint32_t sched_get_active_tid() {
 
 // Initialize the scheduler. Should be called by the kernel ONLY
 uint32_t sched_init(void) {
-	ensure_kernel_vas();
+    ensure_kernel_vas();
 
-	sched_tid = 0;
+    sched_tid = 0;
 
     os_printf("Initializing scheduler\n");
     last_err = "No error";
@@ -118,7 +125,7 @@ uint32_t sched_init(void) {
 // initial call that causes the scheduler to start
 void sched_start(void)
 {
-	__sched_dispatch();
+    __sched_dispatch();
 }
 
 uint32_t sched_register_callback_handler(sched_callback_handler cb_handler) {
@@ -136,7 +143,7 @@ uint32_t sched_deregister_callback_handler() {
 
 // Free the resources used the scheduler
 uint32_t sched_free() {
-	ensure_kernel_vas();
+    ensure_kernel_vas();
 
     // FIXME kill active tasks
 
@@ -229,8 +236,8 @@ sched_task* __sched_find_subtask(sched_task * parent_task, uint32_t tid) {
 //
 // NOTE expecting access to kernel global vars
 void sched_waittid(uint32_t tid) {
-	// FIXME: broken!
-	while (1) {
+    // FIXME: broken!
+    while (1) {
         sched_task * task = (sched_task*) hmap_get(all_tasks_map, (unsigned long) tid);
         if (task == 0 || task->state == TASK_STATE_FINISHED) {
             break;
@@ -274,7 +281,7 @@ uint32_t __sched_remove_task(sched_task * task) {
             int i = 0;
             for (; i < arrl_count(task->children_tids); i++) {
                 // FIXME: this API does not exist anymore
-            	// sched_remove_task(arrl_get(task->children_tids, i));
+                // sched_remove_task(arrl_get(task->children_tids, i));
             }
 
             __sched_resume_timer_irq();
@@ -339,9 +346,11 @@ void __sched_dispatch(void) {
             active_task->state = TASK_STATE_ACTIVE;
 
             if (IS_PROCESS(active_task)) {
+                vm_enable_vas(AS_PROCESS(active_task)->stored_vas);
                 __sched_resume_timer_irq();
                 execute_process(AS_PROCESS(active_task));
             } else if (IS_KTHREAD(active_task)) {
+                // shouldn't be here
                 AS_KTHREAD(active_task)->cb_handler();
             }
 

@@ -15,7 +15,7 @@
  *	+ 0b10011 = SVC (supervisor, or, OS) mode
  *	(others...)
  */
-
+#include "kthread.h"
 #include <stdint.h>
 #include "hw_handlers.h"
 #include "global_defs.h"
@@ -115,6 +115,9 @@ void start2(uint32_t *p_bootargs)
 	start_timer_interrupts(0, 10);
 
 	argparse_process(p_bootargs);
+
+	sched_start(); //to start.c
+
 
 	print_uart0("done parsing atag list\n");
 
