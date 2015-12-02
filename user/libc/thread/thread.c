@@ -1,4 +1,5 @@
 #include <thread.h>
+#include <stdio.h>
 
 /* 
  * \brief Creates a new thread.   
@@ -14,7 +15,8 @@
  */
 int thread_create(thread_t *thread, void *(*func)(void*), void *arg)
 {
-   return -10;
+   long error = __syscall2(SYSCALL_THREAD_CREATE, (long) thread, (long) (*func)(void*), (long) arg);
+   return error;
 }
 
 /* 
@@ -24,7 +26,8 @@ int thread_create(thread_t *thread, void *(*func)(void*), void *arg)
  *                       trying to join on this thread.
  */
 void thread_exit(void* result) {
-
+    long error = __syscall1(SYSCALL_THREAD_EXIT, (long) result);
+    return error;
 } 
 
 /*
@@ -44,7 +47,8 @@ void thread_exit(void* result) {
  */
 int thread_join(thread_t thread, void **result)
 {
-
+    long error = __syscall2(SYSCALL_THREAD_JOIN, (long) &thread, (long) *result);
+    return error;
 }
 
 /*
@@ -58,7 +62,8 @@ int thread_join(thread_t thread, void **result)
  */
 int thread_get_id(thread_t thread) 
 {
-
+    long error = __syscall1(SYSCALL_THREAD_GET_ID, (long) &thread);
+    return error;
 }
 
 /*
@@ -68,5 +73,6 @@ int thread_get_id(thread_t thread)
  */
 thread_t thread_self(void)
 {
-
+    long error = __syscall1(SYSCALL_THREAD_SELF);
+    return error;
 }

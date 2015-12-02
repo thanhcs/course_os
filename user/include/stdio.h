@@ -8,6 +8,11 @@ extern "C" {
 #include <features.h>
 
 #define SYSCALL_PRINTF 16
+#define SYSCALL_THREAD_CREATE 17
+#define SYSCALL_THREAD_EXIT 18
+#define SYSCALL_THREAD_JOIN 19
+#define SYSCALL_THREAD_GET_ID 19
+#define SYSCALL_THREAD_SELF 20
 #define SYSCALL_DUMMY  99
 
 #define __NEED_FILE
