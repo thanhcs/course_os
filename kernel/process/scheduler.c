@@ -382,7 +382,7 @@ void __sched_dispatch(void) {
                     }
 
                     // FIXME: implement
-                    // kthread_save_state(AS_KTHREAD(active_task));
+                    kthread_save_state(AS_KTHREAD(active_task));
                 }
 
                 active_task = next_task;
@@ -396,7 +396,7 @@ void __sched_dispatch(void) {
                     __sched_emit_messages();
 
                     // FIXME: implement
-                    // kthread_load_state(AS_KTHREAD(active_task));
+                    kthread_load_state(AS_KTHREAD(active_task));
                 }
             }
             break;
