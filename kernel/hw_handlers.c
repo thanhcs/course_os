@@ -1,4 +1,4 @@
-ok /*
+/*
  *
  * Harware Handler Interface  
  *
