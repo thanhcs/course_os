@@ -1,5 +1,6 @@
 #include <thread.h>
 #include <stdio.h>
+#include "../arch/arm/syscall_arch.h"
 
 /* 
  * \brief Creates a new thread.   
@@ -15,7 +16,7 @@
  */
 int thread_create(thread_t *thread, void *(*func)(void*), void *arg)
 {
-   long error = __syscall2(SYSCALL_THREAD_CREATE, (long) thread, (long) (*func)(void*), (long) arg);
+   long error = __syscall3(SYSCALL_THREAD_CREATE, (long) thread, (long) func, (long) arg);
    return error;
 }
 
@@ -26,8 +27,7 @@ int thread_create(thread_t *thread, void *(*func)(void*), void *arg)
  *                       trying to join on this thread.
  */
 void thread_exit(void* result) {
-    long error = __syscall1(SYSCALL_THREAD_EXIT, (long) result);
-    return error;
+    __syscall1(SYSCALL_THREAD_EXIT, (long) result);
 } 
 
 /*
@@ -73,6 +73,6 @@ int thread_get_id(thread_t thread)
  */
 thread_t thread_self(void)
 {
-    long error = __syscall1(SYSCALL_THREAD_SELF);
-    return error;
+    thread_t thread = (thread_t) __syscall0(SYSCALL_THREAD_SELF);
+    return thread;
 }
