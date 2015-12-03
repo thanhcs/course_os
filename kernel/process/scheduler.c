@@ -355,8 +355,9 @@ void __sched_dispatch(void) {
             if (IS_PROCESS(active_task)) {
                 vm_enable_vas(AS_PROCESS(active_task)->stored_vas);
                 __sched_resume_timer_irq();
-                // pcb* p = (pcb*) active_task->task;
-                // current_process_id = p->PID;
+                pcb* p = (pcb*) active_task->task;
+                // os_printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ information of pcb: %d\n", (long) p->starting_address);
+                current_process_id = p->PID;
                 execute_process(AS_PROCESS(active_task));
             } else if (IS_KTHREAD(active_task)) {
                 // shouldn't be here
@@ -402,10 +403,10 @@ void __sched_dispatch(void) {
                     load_process_state(AS_PROCESS(active_task)); // continue with the next process
                 } else if (IS_KTHREAD(active_task)) {
                     __sched_emit_messages();
-                    // os_printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ %d", current_process_id);
-                    // kthread_handle* k = (kthread_handle*) active_task->task;
-                    // pcb* p = get_PCB(k->parent_pid);
-                    // vm_enable_vas(p->stored_vas);
+                    vm_use_kernel_vas();
+                    pcb* p = get_PCB(AS_KTHREAD(active_task)->parent_pid);
+                    // os_printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ information of pcb: %d\n", (long) p->starting_address);                    
+                    vm_enable_vas(p->stored_vas);
                     // FIXME: implement
                     kthread_load_state(AS_KTHREAD(active_task));
                 }
