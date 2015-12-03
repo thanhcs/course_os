@@ -10,11 +10,19 @@
 #include "klibc.h"
 #include "scheduler.h"
 
-kthread_handle* kthread_create(kthread_callback_handler cb_handler)
+// kthread_handle* kthread_create(kthread_callback_handler cb_handler)
+// {
+// 	kthread_handle * kthread = kmalloc(sizeof(kthread_handle));
+// 	kthread->cb_handler = cb_handler;
+// 	return kthread;
+// }
+
+kthread_handle* kthread_create()
 {
-	kthread_handle * kthread = kmalloc(sizeof(kthread_handle));
-	kthread->cb_handler = cb_handler;
-	return kthread;
+    vm_use_kernel_vas();
+    kthread_handle * kthread = kmalloc(sizeof(kthread_handle));
+    // kthread->parent_pid = get_process_pid();
+    return kthread;
 }
 
 uint32_t kthread_start(kthread_handle * kthread)

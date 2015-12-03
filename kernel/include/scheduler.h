@@ -43,7 +43,7 @@ void __sched_deregister_timer_irq();
 void __sched_pause_timer_irq();
 void __sched_resume_timer_irq();
 
-
+uint32_t get_process_pid();
 uint32_t sched_init(void);
 void sched_start(void);
 uint32_t sched_free();

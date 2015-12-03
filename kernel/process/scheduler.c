@@ -32,6 +32,7 @@ static prq_handle * inactive_tasks;
 static prq_handle * active_tasks;
 static sched_task * active_task;
 static hmap_handle * all_tasks_map;
+uint32_t current_process_id;
 
 static uint32_t sched_tid;
 
@@ -211,6 +212,11 @@ sched_task* sched_create_task_from_process(pcb * pcb_pointer, int niceness) {
     return __sched_create_task(pcb_pointer, niceness, PROCESS);
 }
 
+uint32_t get_process_pid() {
+    return current_process_id;
+}
+
+
 
 // Helper function used by the scheduler internally. It will traverse the parent/child
 // list to find a subtask.
@@ -340,14 +346,17 @@ void __sched_dispatch(void) {
         last_task = (sched_task*) node->data;
     }
 
+    
+
     switch (last_task->state) {
         case TASK_STATE_INACTIVE: {
             active_task = last_task;
             active_task->state = TASK_STATE_ACTIVE;
-
             if (IS_PROCESS(active_task)) {
                 vm_enable_vas(AS_PROCESS(active_task)->stored_vas);
                 __sched_resume_timer_irq();
+                // pcb* p = (pcb*) active_task->task;
+                // current_process_id = p->PID;
                 execute_process(AS_PROCESS(active_task));
             } else if (IS_KTHREAD(active_task)) {
                 // shouldn't be here
@@ -374,7 +383,6 @@ void __sched_dispatch(void) {
                         vm_enable_vas(AS_PROCESS(active_task)->stored_vas);
                         break;
                     }
-
                     save_process_state(AS_PROCESS(last_task));
                 } else if (IS_KTHREAD(active_task)) {
                     if (active_task == next_task) {
@@ -394,7 +402,10 @@ void __sched_dispatch(void) {
                     load_process_state(AS_PROCESS(active_task)); // continue with the next process
                 } else if (IS_KTHREAD(active_task)) {
                     __sched_emit_messages();
-
+                    // os_printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ %d", current_process_id);
+                    // kthread_handle* k = (kthread_handle*) active_task->task;
+                    // pcb* p = get_PCB(k->parent_pid);
+                    // vm_enable_vas(p->stored_vas);
                     // FIXME: implement
                     kthread_load_state(AS_KTHREAD(active_task));
                 }
