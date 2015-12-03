@@ -99,6 +99,7 @@ void start2(uint32_t *p_bootargs)
 	 recognized as an ELF file and DATA ABORT HANDLER being syscalled			   
 	 */
 
+	vm_use_kernel_vas();
 	// enable interrupt handling
 	enable_interrupts();
 

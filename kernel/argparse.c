@@ -130,7 +130,7 @@ static void argparse_parse(char *cmdline)
 
 			sched_task* task = sched_create_task_from_process(proc, 10);
 			sched_add_task(task);
-			sched_start();	
+			// sched_start();	
 		}
 		else if (os_strcmp("-test", token) == 0)
 		{
