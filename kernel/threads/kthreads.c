@@ -21,7 +21,7 @@ kthread_handle* kthread_create()
 {
     vm_use_kernel_vas();
     kthread_handle * kthread = kmalloc(sizeof(kthread_handle));
-    // kthread->parent_pid = get_process_pid();
+    kthread->parent_pid = get_process_pid();
     return kthread;
 }
 
