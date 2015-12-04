@@ -126,6 +126,7 @@ uint32_t sched_init(void) {
 // initial call that causes the scheduler to start
 void sched_start(void)
 {
+    os_printf("@@@@@@@@@@@@@@@@@ number tasks: %d \n ---- should have 1 process in here right now\n", prq_count(active_tasks));
     __sched_dispatch();
 }
 
@@ -325,7 +326,8 @@ void __sched_dispatch(void) {
 
     // use the kernel memory
     vm_use_kernel_vas();
-    os_printf("@@@@@@@@@@@@@@@@@ number tasks: %d \n", prq_count(active_tasks));
+    os_printf("@@@@@@@@@@@@@@@@@ IN DISPATCH - number active tasks: %d \n", prq_count(active_tasks));
+    os_printf("@@@@@@@@@@@@@@@@@ IN DISPATCH - number inactive tasks: %d \n", prq_count(inactive_tasks));
 
     if (prq_count(active_tasks) < MAX_ACTIVE_TASKS) {
         if (prq_count(inactive_tasks) > 0) {
@@ -335,6 +337,7 @@ void __sched_dispatch(void) {
 
     if (prq_count(active_tasks) == 0) {
         __sched_resume_timer_irq();
+        os_printf("@@@@@@@@@@@@@@ SHOULD BE IN HERE IF NO TASK ");
         return;
     }
 
@@ -360,11 +363,11 @@ void __sched_dispatch(void) {
                 pcb* p = (pcb*) active_task->task;
                 // os_printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ information of pcb: %d\n", (long) p->starting_address);
                 current_process_id = p->PID;
-                os_printf("@@@@@@@@@@@@@@@@@@@@@@@@@@ Case TASK_STATE_INACTIVE in Process \n");
+                os_printf("@@@@@@@@@@@@@@@@@@@@@@@@@@ TASK_STATE_INACTIVE - RUN PROCESS\n");
                 execute_process(AS_PROCESS(active_task));
             } else if (IS_KTHREAD(active_task)) {
                 // shouldn't be here
-                os_printf("@@@@@@@@@@@@@@@@@@@@@@@@@@ Case TASK_STATE_INACTIVE in Thread \n");
+                os_printf("@@@@@@@@@@@@@@@@@@@@@@@@@@ TASK_STATE_INACTIVE - RUN THREAD\n");
                 // AS_KTHREAD(active_task)->cb_handler();
             }
 
@@ -388,6 +391,7 @@ void __sched_dispatch(void) {
                         vm_enable_vas(AS_PROCESS(active_task)->stored_vas);
                         break;
                     }
+                    os_printf("@@@@@@@ SAVE PROCESS DATA AND SCHEDULE A NEW TASK\n");
                     save_process_state(AS_PROCESS(last_task));
                 } else if (IS_KTHREAD(active_task)) {
                     if (active_task == next_task) {
@@ -395,6 +399,7 @@ void __sched_dispatch(void) {
                     }
 
                     // FIXME: implement
+                    os_printf("@@@@@@@ SAVE THREAD DATA AND SCHEDULE A NEW TASK\n");
                     kthread_save_state(AS_KTHREAD(active_task));
                 }
 
@@ -404,6 +409,7 @@ void __sched_dispatch(void) {
                 if (IS_PROCESS(active_task)){
                     vm_enable_vas(AS_PROCESS(active_task)->stored_vas);
                     __sched_emit_messages();
+                    os_printf("@@@@@@@ LOAD PROCESS DATA\n");
                     load_process_state(AS_PROCESS(active_task)); // continue with the next process
                 } else if (IS_KTHREAD(active_task)) {
                     __sched_emit_messages();
@@ -413,6 +419,7 @@ void __sched_dispatch(void) {
                     vm_enable_vas(p->stored_vas);
                     // AS_KTHREAD(active_task)->R13 = (uint32_t) umalloc(50);
                     // FIXME: implement
+                    os_printf("@@@@@@@ LOAD THREAD DATA\n");
                     kthread_load_state(AS_KTHREAD(active_task));
                 }
             }
