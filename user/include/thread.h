@@ -5,6 +5,12 @@ typedef struct thread * thread_t;
 #define ERR_INVALID_THREAD		-3
 #define ERR_THREAD_TERMINATED		-4
 
+#define SYSCALL_THREAD_CREATE 1000
+#define SYSCALL_THREAD_EXIT 1001
+#define SYSCALL_THREAD_JOIN 1002
+#define SYSCALL_THREAD_GET_ID 1003
+#define SYSCALL_THREAD_SELF 1004
+
 /* 
  * \brief Creates a new thread.   
  *
