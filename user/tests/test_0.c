@@ -8,6 +8,7 @@ void* f(void* arg)
 
    assert(((int)arg) == 1);
 
+   printf("before exit\n");
    thread_exit(NULL);
 }
 

@@ -37,6 +37,8 @@ typedef struct kthread_handle {
 } kthread_handle;
 
 kthread_handle* kthread_create();
+uint32_t kthread_exit();
+void free_kthread_handler(kthread_handle* kh);
 uint32_t kthread_start(kthread_handle * kthread);
 void kthread_save_state(kthread_handle* kthread);
 void kthread_load_state(kthread_handle* kthread);

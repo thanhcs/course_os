@@ -212,6 +212,7 @@ sched_task* sched_create_task_from_process(pcb * pcb_pointer, int niceness) {
     return __sched_create_task(pcb_pointer, niceness, PROCESS);
 }
 
+// get the active_task process pid
 uint32_t get_process_pid() {
     return current_process_id;
 }
@@ -277,7 +278,7 @@ uint32_t __sched_remove_task(sched_task * task) {
             if (IS_PROCESS(task)) {
                 free_PCB(AS_PROCESS(task));
             } else if (IS_KTHREAD(task)) {
-                // FIXME add later
+                free_kthread_handler(AS_KTHREAD(task));
             }
 
             hmap_remove(all_tasks_map, task->tid);
@@ -324,6 +325,7 @@ void __sched_dispatch(void) {
 
     // use the kernel memory
     vm_use_kernel_vas();
+    os_printf("@@@@@@@@@@@@@@@@@ number tasks: %d \n", prq_count(active_tasks));
 
     if (prq_count(active_tasks) < MAX_ACTIVE_TASKS) {
         if (prq_count(inactive_tasks) > 0) {
@@ -358,10 +360,12 @@ void __sched_dispatch(void) {
                 pcb* p = (pcb*) active_task->task;
                 // os_printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ information of pcb: %d\n", (long) p->starting_address);
                 current_process_id = p->PID;
+                os_printf("@@@@@@@@@@@@@@@@@@@@@@@@@@ Case TASK_STATE_INACTIVE in Process \n");
                 execute_process(AS_PROCESS(active_task));
             } else if (IS_KTHREAD(active_task)) {
                 // shouldn't be here
-                AS_KTHREAD(active_task)->cb_handler();
+                os_printf("@@@@@@@@@@@@@@@@@@@@@@@@@@ Case TASK_STATE_INACTIVE in Thread \n");
+                // AS_KTHREAD(active_task)->cb_handler();
             }
 
             __sched_pause_timer_irq();

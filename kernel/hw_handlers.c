@@ -163,7 +163,7 @@ long __attribute__((interrupt("SWI"))) software_interrupt_handler(void)
 		os_printf((const char*) r0);
 		return 0L;
 	case SYSCALL_THREAD_CREATE:
-		os_printf("Call SYSCALL_THREAD_CREATE in hw_handler\n");
+		os_printf("@@@@@@@ Call SYSCALL_THREAD_CREATE\n");
 		kthread_handle* kt = kthread_create();
 		kt->R15 = r1;
 		kt->R0 = r2;
@@ -171,7 +171,8 @@ long __attribute__((interrupt("SWI"))) software_interrupt_handler(void)
 		return 0L;
 	case SYSCALL_THREAD_EXIT:
 		// TODO
-		return 0L;
+		os_printf("@@@@@@@ Call SYSCALL_THREAD_EXIT\n");
+		return kthread_exit();
 	case SYSCALL_THREAD_JOIN:
 		// TODO
 		return 0L;

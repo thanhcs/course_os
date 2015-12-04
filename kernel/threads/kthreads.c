@@ -33,6 +33,19 @@ uint32_t kthread_start(kthread_handle * kthread)
     return kthread->parent_pid;
 }
 
+uint32_t kthread_exit() 
+{
+    uint32_t current_thread_tid = sched_get_active_tid();
+    return sched_remove_task(current_thread_tid);
+}
+
+void free_kthread_handler(kthread_handle* kh) 
+{
+    os_printf("free_kthread_handler");
+    kfree(kh);
+} 
+
+
 void kthread_save_state(kthread_handle* kthread)
 {
     asm("MOV %0, r0":"=r"(kthread->R0)::);
