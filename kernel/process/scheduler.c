@@ -403,10 +403,11 @@ void __sched_dispatch(void) {
                     load_process_state(AS_PROCESS(active_task)); // continue with the next process
                 } else if (IS_KTHREAD(active_task)) {
                     __sched_emit_messages();
-                    vm_use_kernel_vas();
+                    // vm_use_kernel_vas();
                     pcb* p = get_PCB(AS_KTHREAD(active_task)->parent_pid);
                     // os_printf("@@@@@@@@@@@@@@@@@@@@@@@@@@@@ information of pcb: %d\n", (long) p->starting_address);                    
                     vm_enable_vas(p->stored_vas);
+                    // AS_KTHREAD(active_task)->R13 = (uint32_t) umalloc(50);
                     // FIXME: implement
                     kthread_load_state(AS_KTHREAD(active_task));
                 }
