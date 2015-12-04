@@ -8,6 +8,7 @@ void* f(void* arg)
    // while(1);
 
    assert(((int)arg) == 1);
+   // while(1);
 
    return arg;
 }
@@ -19,7 +20,7 @@ void main(void)
    printf("before thread_create\n");
 
    int rc = thread_create(&thread, f, (void*) 1);
-   // assert(rc == 0);
+   assert(rc == 0);
 
    printf("after thread_create\n");
 
